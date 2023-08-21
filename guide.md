@@ -25,7 +25,7 @@ This process is basically an ensemble of multiple technologies working together.
 
 Creating an accurate document database is certainly the crucial step of our project. Given that our AI chatbot will rely significantly on this database to generate relevant, context-driven responses, this repository must be created with care and precision. Let's get into the details of this fundamental step:
 
-* **The Importance of Quality Over Quantity**: While collecting a large collection of documents may be appealing, it is critical to ensure that each entry is succinct, clear, and complete. The goal is to provide our LLM with well-defined, structured information. Ambiguity or unnecessary details might obscure the context, resulting in less clear chatbot responses.
+ * **The Importance of Quality Over Quantity**: While collecting a large collection of documents may be appealing, it is critical to ensure that each entry is succinct, clear, and complete. The goal is to provide our LLM with well-defined, structured information. Ambiguity or unnecessary details might obscure the context, resulting in less clear chatbot responses.
 
  * **The Database's Dynamic Nature**: One of the approach's distinguishing features is its inherent flexibility. Unlike traditional models, where updates may demand complete retraining, our approach is built for scalability. As new information becomes available or the organization evolves, new documents can be easily added to the database. This means that our chatbot is always up to date and in sync with the newest company developments, without the need for time-consuming recalibrations. However, The document database, like any other repository of information, is not a'set-it-and-forget-it' asset. Regular audits are recommended to verify information accuracy and relevancy.
 
@@ -41,13 +41,7 @@ It is difficult to build a model that generates reliable embeddings. It necessit
 
 Embeddings are extremely useful for AI chatbots. They enable the chatbot to assess semantic similarity, ensuring that responses are relevant to the user's goal. The good news is that, while the inner workings may appear complex, engineers do not need to know all of the details. The main lesson is that embeddings allow us to discover and exploit semantic linkages in language, allowing our chatbots to answer with greater relevance and context awareness.
 
-As we will see later, the process of generating embeddings is straightforward when we use a pre-trained model:
-```mermaid
-graph LR
-A["Input: Hello, I am a software engineer !"]
-A --> B["Pre-trained Model: Word2Vec"]
-B --> C["Vector: [0.0303, -0.0117, 0.006, ..]"]
-```
+As we will see later, the process of generating embeddings is straightforward when we use a pre-trained model.
 
 ### 3.2 Tools and frameworks for generating embeddings
 
@@ -70,20 +64,22 @@ Let's break the code contained in this file.
  1. **Imports**: The module begins by importing the dependencies required for this stage. Notably, we import the openai library, which will be used to produce embeddings from the Excel file's documents.
  2. **Loading the Excel File**: The Excel file is loaded into a pandas dataframe. This spreadsheet only contains the index, title and document columns. The index column is a unique identifiers for each row and the document column contains the document content.
  3. **The get_embedding function**: 
-	 ```python
-	 def get_embedding(text, model="text-embedding-ada-002"):
-		 text = text.replace("\n", " ")
-		 return openai.Embedding.create(input=[text], model=model)["data"][0]["embedding"]
-	 ```
-	The purpose of the `get_embedding` function is to generate the embedding of the text that is given as input. This is directly taken from the openai docs with no modifications. A few things worth noting:
-	* The newline characters in the text are deleted to make sure the entry is clean.
-	* The function calls  OpenAI's API to create the embedding for the given text, using the `text-embedding-ada-002` model.
+
+ ```python
+     def get_embedding(text, model="text-embedding-ada-002"):
+         text = text.replace("\n", " ")
+         return openai.Embedding.create(input=[text], model=model)["data"][0]["embedding"]
+ ```
+The purpose of the `get_embedding` function is to generate the embedding of the text that is given as input. This is directly taken from the openai docs with no modifications. A few things worth noting:
+* The newline characters in the text are deleted to make sure the entry is clean.
+* The function calls  OpenAI's API to create the embedding for the given text, using the `text-embedding-ada-002` model.
+
 4. **Data processing**:
 	The embeddings are stored in a new column of our pandas dataframe. After that, we may permanently store the dataframe:
-	```python
-	df["embeddings"] = df.apply(lambda x: get_embedding(x["document"]), axis=1)
-	df.to_csv("data/documents_processed.csv", index=False)
-	```
+```python
+    df["embeddings"] = df.apply(lambda x: get_embedding(x["document"]), axis=1)
+    df.to_csv("data/documents_processed.csv", index=False)
+```
 
 By using this simple approach, you can easily turn your document collection into a file that includes embeddings. The beauty is in how simple it is: with just a few lines of code, each document in your original collection is added to with its own embedding. This embedded data is now the foundation of our AI chatbot's ability to understand context as we will see in the next steps.
 
@@ -110,43 +106,44 @@ Pinecone is a vector database that is both reliable and simple to use. Since it
 The full code can be found in the file `src/02_create_records_in_pynecone.py`
 
 Let's look at the code that allows us to send vectors to Pinecone:
+
 1. **Initialization and Configuration**: This part imports the required modules, reads the file that we created during the previous step, and sets up Pinecone with the required API key and environment setting. Specifically, we import the pinecone Python library to communicate with the database.
-	```python
-	import pandas as pd
-	import pinecone
-	from .load_config import load
-	
-	df = pd.read_csv("data/documents_processed.csv")
-	pinecone_token = load("config.yaml")["tokens"]["pinecone"]
-	pinecone_env = load("config.yaml")["parameters"]["pinecone_env"]
-	pinecone.init(api_key=pinecone_token, environment=pinecone_env)
-	```
+```python
+    import pandas as pd
+    import pinecone
+    from .load_config import load
+
+    df = pd.read_csv("data/documents_processed.csv")
+    pinecone_token = load("config.yaml")["tokens"]["pinecone"]
+    pinecone_env = load("config.yaml")["parameters"]["pinecone_env"]
+    pinecone.init(api_key=pinecone_token, environment=pinecone_env)
+```
 2. **Create Index in Pinecone**: Here, an attempt is made to make an index named "startech" with a certain size (1536) and associated with the cosine metric to measure the distance between vectors. If the index already exists, the code will just show a message. Then, it gets the newly made (or existing) index.
-	```python
-	try:
-    pinecone.create_index("startech", dimension=1536, metric="cosine")
-	except:
-	    print("index already exists")
-	
-	print(pinecone.list_indexes())
-	index = pinecone.Index("startech")
-	```
+```python
+    try:
+        pinecone.create_index("startech", dimension=1536, metric="cosine")
+    except:
+        print("index already exists")
+
+    print(pinecone.list_indexes())
+    index = pinecone.Index("startech")
+```
 3. **Convert Embeddings to List**: Since our embeddings are saved as strings that look like lists, we need a function to turn them back into real lists of floats for processing. That's what this function does.
-	```python
-	def create_a_list_from_list_as_string(x):
+```python
+    def create_a_list_from_list_as_string(x):
     ll = x.replace("[", "").replace("]", "").split(",")
     return [float(element) for element in ll] 
 
-	df["embeddings_as_list"] = df["embeddings"].apply(create_a_list_from_list_as_string)
-	```
+    df["embeddings_as_list"] = df["embeddings"].apply(create_a_list_from_list_as_string)
+```
 4. **Upload Records**: This part gets our records ready for insertion (or "upsertion"). It goes through our dataframe, combining each document's index with its embedding, and then adds them to the Pinecone index.
-    ```python
+```python
     records = []
-	for row in df.iterrows():
-	    records.append((str(row[1]["index"]), row[1]["embeddings_as_list"]))
+    for row in df.iterrows():
+        records.append((str(row[1]["index"]), row[1]["embeddings_as_list"]))
 
-	index.upsert(records)
-	```
+    index.upsert(records)
+```
 
 ## **5. Querying the Vector Database**
 
@@ -189,7 +186,7 @@ Here the three most relevant documents are stored in results:
 
 Now that we have these documents, it is easy to use an LLM of your choice with this additional context added for the model to use in its answer.
 
-For this part, this guide will use Llama v2 which is an open source model released by Meta on July 18, 2023. To avoid the hassle of running it locally on a GPU machine, we can use (https://replicate.com/)[Replicate.com] which is a service that runs open source models through a rest apis. To use Replicate, create an account and get a token as with OpenAI and Pinecone. Of course it is also possible to run it locally but you will need to download the model first. 
+For this part, this guide will use Llama v2 which is an open source model released by Meta on July 18, 2023. To avoid the hassle of running it locally on a GPU machine, we can use [Replicate.com](https://replicate.com/) which is a service that runs open source models through a rest apis. To use Replicate, create an account and get a token as with OpenAI and Pinecone. Of course it is also possible to run it locally but you will need to download the model first. 
 
 The code in `src/03_query_vector_database.py`. It is still the same script but the second part is dedicated to interacting with the LLM.
 
@@ -254,5 +251,5 @@ Also, by combining a vector database with large language models, we make a scala
 
 ## **Further reading and resources**
 
-[Embeddings - OpenAI API](https://platform.openai.com/docs/guides/embeddings/what-are-embeddings)
-[Multi-modal ML with OpenAI's CLIP | Pinecone](https://www.pinecone.io/learn/series/image-search/clip/)
+[Embeddings - OpenAI API](https://platform.openai.com/docs/guides/embeddings/what-are-embeddings)  
+    [Multi-modal ML with OpenAI's CLIP | Pinecone](https://www.pinecone.io/learn/series/image-search/clip/)
