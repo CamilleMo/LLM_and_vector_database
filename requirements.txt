@@ -1,0 +1,9 @@
+pandas
+openpyxl
+openai
+pinecone-client
+replicate
+
+black
+flake8
+isort
