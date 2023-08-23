@@ -1,5 +1,7 @@
 # Crafting Context-Driven AI Chatbots: A Data Engineer's Guide to Vector Databases and Embeddings
 
+The code can be found on [Github](https://github.com/CamilleMo/LLM_and_vector_database)
+
 ## **1. Introduction**
 
 ### 1.1 Purpose of the tutorial
@@ -29,7 +31,7 @@ Creating an accurate document database is certainly the crucial step of our pro
 
  * **The Database's Dynamic Nature**: One of the approach's distinguishing features is its inherent flexibility. Unlike traditional models, where updates may demand complete retraining, our approach is built for scalability. As new information becomes available or the organization evolves, new documents can be easily added to the database. This means that our chatbot is always up to date and in sync with the newest company developments, without the need for time-consuming recalibrations. However, The document database, like any other repository of information, is not a'set-it-and-forget-it' asset. Regular audits are recommended to verify information accuracy and relevancy.
 
-For the purposes of this tutorial, I've created imaginary documents about StarTech using ChatGPT. It will be sufficient for readers to understand core concepts.
+For the purposes of this tutorial, I've created imaginary documents about StarTech using ChatGPT. It will be sufficient for readers to understand core concepts. These documents can be found in the companion repository: `data/documents.xlsx`.
 
 ## **3. Generating Embeddings**
 
@@ -223,7 +225,7 @@ Note that the system prompt is a general prompt that sets the general behavior o
 
 The model can now answer questions with relevant information given to it just-in-time:
 ```
-Prompt: Is StarTech a company that try to limit its impact on the environment ?
+Prompt: Is StarTech a company that tries to limit its impact on the environment ?
 
 Output:
 Yes, StarTech appears to be a company that prioritizes limiting its impact on the environment. The company has implemented sustainable manufacturing practices that have reduced carbon emissions by 40% since 2018, and has initiatives in place to promote gender equality and diversity. Additionally, StarTech is committed to reducing waste and implementing cleaner production methods. The company's commitment to sustainability is evident in their efforts to expand their global footprint, increase R&D investments, and diversify their product range while aiming to minimize their environmental impact.
