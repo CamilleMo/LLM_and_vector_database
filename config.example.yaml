@@ -1,0 +1,8 @@
+tokens:
+  openai: "secret-token"
+  pinecone: "secret-token"
+  replicate: "secret-token"
+
+parameters:
+  pinecone_env: "gcp-starter"
+

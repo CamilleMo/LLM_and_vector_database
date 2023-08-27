@@ -13,7 +13,7 @@ Even though embeddings are becoming more important, many people still don't unde
 
 Going from raw documents to AI-driven answers that make sense and are based on context requires a step-by-step process that combines the power of embeddings, vector databases, and large language models. Let's break this trip down into steps:
 
-* **Documents Base Creation**: We start the process with a selected set of thirty documents about a made-up company called StarTech. These papers are the main source of information and context for our whole system. They are the foundation on which everything else will be built.
+* **Documents Base Creation**: We start the process with a selected set of thirty documents about a made-up company called StarTech. These documents are the main source of information and context for our whole system. They are the foundation on which everything else will be built.
 
 * **Embeddings Generation**: We switch to embeddings to make sense of the text in these documents in a way that machines can understand. Each document is transformed into a vector of decimals. Even though these vectors look abstract, they capture the main ideas, concepts, and nuances of the document's content in a way that can be used by programs.
 
@@ -29,7 +29,7 @@ Creating an accurate document database is certainly the crucial step of our pro
 
  * **The Importance of Quality Over Quantity**: While collecting a large collection of documents may be appealing, it is critical to ensure that each entry is succinct, clear, and complete. The goal is to provide our LLM with well-defined, structured information. Ambiguity or unnecessary details might obscure the context, resulting in less clear chatbot responses.
 
- * **The Database's Dynamic Nature**: One of the approach's distinguishing features is its inherent flexibility. Unlike traditional models, where updates may demand complete retraining, our approach is built for scalability. As new information becomes available or the organization evolves, new documents can be easily added to the database. This means that our chatbot is always up to date and in sync with the newest company developments, without the need for time-consuming recalibrations. However, The document database, like any other repository of information, is not a'set-it-and-forget-it' asset. Regular audits are recommended to verify information accuracy and relevancy.
+ * **The Database's Dynamic Nature**: One of the approach's distinguishing features is its inherent flexibility. Unlike traditional models, where updates may demand complete retraining, our approach is built for scalability. As new information becomes available or the organization evolves, new documents can be easily added to the database. This means that our chatbot is always up to date and in sync with the newest company developments, without the need for time-consuming recalibrations. However, the document database, like any other repository of information, is not a'set-it-and-forget-it' asset. Regular audits are recommended to verify information accuracy and relevancy.
 
 For the purposes of this tutorial, I've created imaginary documents about StarTech using ChatGPT. It will be sufficient for readers to understand core concepts. These documents can be found in the companion repository: `data/documents.xlsx`.
 
@@ -73,6 +73,7 @@ Let's break the code contained in this file.
          return openai.Embedding.create(input=[text], model=model)["data"][0]["embedding"]
  ```
 The purpose of the `get_embedding` function is to generate the embedding of the text that is given as input. This is directly taken from the openai docs with no modifications. A few things worth noting:
+
 * The newline characters in the text are deleted to make sure the entry is clean.
 * The function calls  OpenAI's API to create the embedding for the given text, using the `text-embedding-ada-002` model.
 
@@ -245,7 +246,7 @@ As we soar into the next decade, StarTech aims to expand its global footprint, i
 
 ## **7. Conclusion**
 
-This small experiment shows how powerful a flexible this approach can be to leverage semantic search and using your own knowledge with LLMs. By using language models that have already been trained and vector databases, it is possible to make systems that are useful in your context and can process and understand a lot of text data. One of the best things about this method is that you don't have to keep retraining models. By not retraining, we don't have to deal with the storage and processing problems that come with big model weights.
+This small experiment shows how powerful and flexible this approach can be to leverage semantic search and using your own knowledge with LLMs. By using language models that have already been trained and vector databases, it is possible to make systems that are useful in your context and can process and understand a lot of text data. One of the best things about this method is that you don't have to keep retraining models. By not retraining, we don't have to deal with the storage and processing problems that come with big model weights.
 
 This method is also easy to try out and change because it is made up of separate parts. We used the Llama v2 model in our test because it is new and showed promise. But it is possible to experiment with any model. Readers can easily try out different language models, like those from OpenAI, to see how well they do on the job. The code and tools are also flexible enough to be used in different ways and with different data sets.
 
